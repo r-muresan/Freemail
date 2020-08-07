@@ -5,23 +5,6 @@ const FNCM = require("./app.js");
 const mailconfig = require("./mailsettings.json");
 const mailout = require("./mailout.js");
 
-/*
-(async() => {
-        await _sodium.ready;
-        const sodium = _sodium;
-
-        let message = "This is my message. Let's encrypt it!";
-        let keySet = sodium.crypto_box_keypair();
-        console.log(keySet);
-
-        let encryptedMessage = sodium.crypto_box_seal(message, keySet.publicKey);
-        console.log("encrypted message", encryptedMessage);
-        console.log("decrypted message", sodium.to_string(sodium.crypto_box_seal_open(encryptedMessage, keySet.publicKey, keySet.private
-Key)));
-})();
-*/
-
-
 exports.start = async () => {
 	// var accounts = new Accounts();
 	await _sodium.ready;
@@ -47,30 +30,6 @@ exports.start = async () => {
 			decryptedMessge.update._id + "@" + decryptedMessage.return_address,
 			to_address
 		);
-/*
-		let decryptedMessage = JSON.parse(sodium.to_string(sodium.crypto_box_seal_open(message, pub_key, sec_key)));
-		// decryptedMessage should contain "data" and "signature"
-
-		// TODO ensure validity of message by signature; retrieve public key from 3Box
-		
-		if (address != undefined) {
-			if (accounts.recover(decryptedMessage.data, decryptedMessage.signature) != address) {
-				console.log("STRANGER DANGER: signature disagrees with FNCM");
-			}
-		} else {
-			if (accounts.recover(decryptedMessage.data, decryptedMessage.signature) != decryptedMessage.data.address) {
-				console.log("STRANGER DANGER: signature does not match address provided in message data");
-			}
-		}
-		// TODO update address book
-		let updateObject = { 
-			pub_key: decryptedMessage.data.pub_key,
-			buck_id: decryptedMessage.data.buck_id
-		};
-
-		return { update: updateObject, CID: decryptedMessage.data.CID };
-	}
-*/
 
 	function getEncryptionKey(address) {
 		// Only if encryption key cannot be obtained from FNCM;
