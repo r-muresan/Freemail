@@ -63,6 +63,10 @@ function exposeAddressbook(collection) {
 		return;
 	}
 
+	async function getMyEthAddress() {
+		return (await collection.findOne({_id: "GENERAL_INBOX"})).eth_address;
+	}
+
 	return {
 		getOutbox, 
 		getAllInboxes, 
@@ -71,11 +75,12 @@ function exposeAddressbook(collection) {
 		getContactPublicKey, 
 		createContact, 
 		editContact, 
-		deleteContact
+		deleteContact,
+		getMyEthAddress
 		};
 }
 
-exports.start = async (generalInbox, onDisconnect) => {
+exports.start = async (generalInboxFunc, onDisconnect) => {
 	const rl = readline.createInterface({
 		input: process.stdin,
 		output: process.stdout
@@ -91,7 +96,7 @@ exports.start = async (generalInbox, onDisconnect) => {
 				rl.question("Password :", async (password) => {
 					db.createCollection(username).then(console.log("created collection", username));
 					let collection = db.collection(username);
-					await generalInbox;
+					generalInbox = await generalInboxFunc();
 					generalInbox._id = "GENERAL_INBOX";
 					collection.insertOne(generalInbox);
 				});

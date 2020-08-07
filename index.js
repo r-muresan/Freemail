@@ -1,10 +1,10 @@
 //const _sodium = require('libsodium-wrappers');
 const mailout = require('./mailout.js');
 const mailin = require('./mailin.js');
-//const daft = require('./daft.js');
+const daft = require('./daft.js');
 //const fs = require('fs');
 
-//daft_functions = daft.start();
+daft_functions = daft.start();
 mailin.startServer(async (stream, session) => {
 	var mailHolder = "";
 	stream.on("data", (chunk) => {
@@ -13,8 +13,8 @@ mailin.startServer(async (stream, session) => {
 
 	stream.on("end", () => {
 		// push email to ipfs	
-
-	var encryptionKeys = []
+	var cid = daft_functions.send_mail_file(mailHolder);
+//	var encryptionKeys = []
 	for (let i=0; i < session.envelope.rcptTo.length; ++i) {
 		// TODO: try to get an appropriate encryption key from FNCM
 		// else check file based on recipient address 
@@ -25,8 +25,15 @@ mailin.startServer(async (stream, session) => {
 
 		// NONE OF THE ABOVE MATTERS NOW
 		// just push each one to IPFS, and send an appropriate message
-	}
+		// should push here, but since no encryption = same hash, will push above
+		// daft_functions.send_mail_file(mailHolder);
 
+		// now I am sending the headers
+		let rcpt = session.envelope.rcptTo[i].split('@');
+		sendHeader(cid, rcpt[0], rcpt[1]);
+	}
+	});
+});
 /*
 	await daft_functions;
 	for (let i=0; i < session.envelope.rcptTo.length; ++i) {

@@ -29,7 +29,6 @@ exports.start = async () => {
 
     }
 
-
     async function newInbox(inbox_name) {
         let db = await orbitdb.docs(inbox_name);
         console.log(db.address.toString())
@@ -61,6 +60,18 @@ exports.start = async () => {
         await db.close()
         return startBlock;
     }
+
+    async function pushFile(contents) {
+	return (await ipfs.add({path: "/", content: contents})).cid;
+    }
+
+	async function getFile(cid) {
+		const chunks = []
+		for await (const chunk of ipfs.cat(cid)) {
+		  chunks.push(chunk);
+		}
+		return Buffer.concat(chunks).toString();
+	}
     return {
         read_messages: readMessages,
         new_inbox: newInbox,

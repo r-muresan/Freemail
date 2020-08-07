@@ -2,7 +2,7 @@ const net = require("net");
 
 exports.send_email = (from_server, from_address, from_name, to_address, to_name, subject, mail, date) => {
 	if (date == undefined)
-		let date = new Date();
+		date = new Date();
 	let day = new Intl.DateTimeFormat("en-US", { weekday: "short" }).format(date);
 	let month = new Intl.DateTimeFormat("en-US", { month: "short" }).format(date);
 	let year = date.getFullYear();
