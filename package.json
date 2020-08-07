@@ -1,0 +1,19 @@
+{
+  "name": "freemail",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "libsodium-wrappers": "^0.7.6",
+    "mailparser": "^2.8.0",
+    "mongodb": "^3.6.0",
+    "nodemailer": "^6.4.11",
+    "smtp-server": "^3.7.0",
+    "web3": "^1.2.11"
+  }
+}
