@@ -12,8 +12,9 @@ exports.start = async () => {
 
 	// start general inbox, then put that into the line below here
 	const fncm = await FNCM.start();
-	const addressbook = await Addressbook.start(async () => {return await generateInbox});
-	const ipfs = await IPFS.create();
+	const addressbook = await Addressbook.start(async () => {return await generateInbox()});
+	fncm.read_messages(await addressbook.getAllInboxes(), receiveHeader);
+	//const ipfs = await IPFS.create();
 
 	function receiveHeader(id, message) {
 		// TODO decrypt, validate
@@ -30,6 +31,7 @@ exports.start = async () => {
 			decryptedMessge.update._id + "@" + decryptedMessage.return_address,
 			to_address
 		);
+	}
 
 	function getEncryptionKey(address) {
 		// Only if encryption key cannot be obtained from FNCM;
@@ -66,7 +68,7 @@ exports.start = async () => {
 		return;
 	}
 	async function generateInbox() {
-		let inboxAddress = await fncm.new_inbox("general inbox");
+		let inboxAddress = await fncm.new_inbox("generalinbox");
 		let inboxObj = {
 			public_key: "test public key",
 			private_key: "test private key",
@@ -74,6 +76,7 @@ exports.start = async () => {
 				addr: inboxAddress
 			}
 		};
+		console.log("generated inbox:", inboxObj);
 		return inboxObj;
 	}
 	async function sendMailFile(mail_file) {

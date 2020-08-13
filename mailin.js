@@ -4,6 +4,8 @@ exports.startServer = (callbackFunc) => {
 	const server = new SMTPServer({
 		authOptional: true,
 		onData(stream, session, callback) {
+			console.log(stream);
+			console.log("session: ", session);
 			callbackFunc(stream, session);
 			stream.on("end", callback);
 		}

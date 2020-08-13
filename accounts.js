@@ -9,17 +9,21 @@ const client = new MongoClient(uri);
 
 function exposeAddressbook(collection) {
 	async function getOutbox(address) {
-		return (await collection.findOne({_id: address})).outbox;
+		let contact = await collection.findOne({_id: address});
+		if (contact == null)
+			return;
+		return contact.outbox;
 	}
-/*
 	async function getInbox(address) {
 		if (address == undefined || address == "GENERAL_INBOX") {
 			let inboxVal = await collection.findOne({_id: "GENERAL_INBOX"})
 			return { inbox: inboxVal.addr, nonce: inboxVal.nonce };
 		}
-		return (await collection.findOne({_id: address})).inbox;
+		let contact = await collection.findOne({_id: address});
+		if (contact == null)
+			return getInbox();
+		return contact.inbox;
 	}
-*/
 	async function getAllInboxes() {
 		return await collection.find().project({ inbox: 1});
 	}
@@ -69,6 +73,7 @@ function exposeAddressbook(collection) {
 
 	return {
 		getOutbox, 
+		getInbox,
 		getAllInboxes, 
 		getSecretKey, 
 		getPublicKey, 
@@ -85,7 +90,7 @@ exports.start = async (generalInboxFunc, onDisconnect) => {
 		input: process.stdin,
 		output: process.stdout
 	});
-	rl.setPrompt("\n> ");
+	//rl.setPrompt("\n> ");
 	try {
 		await client.connect();
 		// const adminDb = client.db("test").admin();

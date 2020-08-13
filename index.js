@@ -4,36 +4,50 @@ const mailin = require('./mailin.js');
 const daft = require('./daft.js');
 //const fs = require('fs');
 
-daft_functions = daft.start();
+(async () => {
+daft_functions = await daft.start();
+console.log("daft started!");
 mailin.startServer(async (stream, session) => {
 	var mailHolder = "";
+	var recipients = []
 	stream.on("data", (chunk) => {
 		mailHolder += chunk;
+		console.log(chunk);
+		console.log("session in daft on data: ", session);
+		for (let i=0; i < session.envelope.rcptTo.length; ++i) {
+			recipients.push(session.envelope.rcptTo[i].address);
+		}
 	});
 
-	stream.on("end", () => {
+	stream.on("end", async () => {
 		// push email to ipfs	
-	var cid = daft_functions.send_mail_file(mailHolder);
-//	var encryptionKeys = []
-	for (let i=0; i < session.envelope.rcptTo.length; ++i) {
-		// TODO: try to get an appropriate encryption key from FNCM
-		// else check file based on recipient address 
-		// assuming format: [eth-address]@[path-to-thread-id-file]..[path-to-encryption-key-file]
-		
-		// else push undefined
-		//encryptionKeys[i] = undefined;
+		var cid = await daft_functions.send_mail_file(mailHolder);
+	//	var encryptionKeys = []
+		console.log("control returned to index line 20");
+		console.log("session in daft on end: ", session);
+		console.log("rcptTo: ", session.envelope.rcptTo);
+		for (let i=0; i < recipients.length; ++i) {
+			// TODO: try to get an appropriate encryption key from FNCM
+			// else check file based on recipient address 
+			// assuming format: [eth-address]@[path-to-thread-id-file]..[path-to-encryption-key-file]
+			
+			// else push undefined
+			//encryptionKeys[i] = undefined;
 
-		// NONE OF THE ABOVE MATTERS NOW
-		// just push each one to IPFS, and send an appropriate message
-		// should push here, but since no encryption = same hash, will push above
-		// daft_functions.send_mail_file(mailHolder);
+			// NONE OF THE ABOVE MATTERS NOW
+			// just push each one to IPFS, and send an appropriate message
+			// should push here, but since no encryption = same hash, will push above
+			// daft_functions.send_mail_file(mailHolder);
 
-		// now I am sending the headers
-		let rcpt = session.envelope.rcptTo[i].split('@');
-		sendHeader(cid, rcpt[0], rcpt[1]);
-	}
+			// now I am sending the headers
+			let rcpt = recipients[i].split('@');
+			console.log("sending header from index, to: ", recipients[i]);
+			daft_functions.send_header(cid, rcpt[0], rcpt[1]);
+		}
 	});
 });
+})();
+
 /*
 	await daft_functions;
 	for (let i=0; i < session.envelope.rcptTo.length; ++i) {
