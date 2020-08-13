@@ -85,7 +85,7 @@ function exposeAddressbook(collection) {
 		};
 }
 
-exports.start = async (generalInboxFunc, onDisconnect) => {
+exports.start = async (generalInboxFunc, onSwitch) => {
 	const rl = readline.createInterface({
 		input: process.stdin,
 		output: process.stdout
@@ -125,10 +125,25 @@ exports.start = async (generalInboxFunc, onDisconnect) => {
 		}
 		function logOut() {
 			rl.question("Are you sure you would like to log out?", (answer) => {
-				if (answer == "yes" || answer == 'y')
-					onDisconnect();
+				if (answer == "yes" || answer == 'y') {
+					//onDisconnect();
+				}
 			});
 		}
+		function switchAccounts() {
+			rl.question("Are you sure you would like to log out?", (answer) => {
+				if (answer == "yes" || answer == 'y') {
+					rl.question("Username: ", (username) => {
+						rl.question("Password :", (password) => {
+							// TODO: return all the addressbook functions in an object
+							let collection = db.collection(username);
+							onSwitch(exposeAddressbook(collection));
+						});
+					});
+				}
+			});
+		}
+			
 		return new Promise((resolveFunc, rejectFunc) => {
 			rl.on("line", (input) => {
 				//console.log(input)
@@ -144,6 +159,12 @@ exports.start = async (generalInboxFunc, onDisconnect) => {
 				}
 				else if (input == "login") {
 					logIn(resolveFunc);
+				}
+				else if (input == "logout") {
+					logOut();
+				}
+				else if (input == "switchuser") {
+					switchAccounts();
 				}
 			});
 		});

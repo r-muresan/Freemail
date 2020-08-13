@@ -12,9 +12,18 @@ exports.start = async () => {
 
 	// start general inbox, then put that into the line below here
 	const fncm = await FNCM.start();
-	const addressbook = await Addressbook.start(async () => {return await generateInbox()});
-	fncm.read_messages(await addressbook.getAllInboxes(), receiveHeader);
+	//const addressbook = await Addressbook.start(async () => {return await generateInbox()});
+	//fncm.read_messages(await addressbook.getAllInboxes(), receiveHeader);
 	//const ipfs = await IPFS.create();
+
+	await resetAccount(await Addressbook.start(async () => {return await generateInbox()}, resetAccount));
+
+	async function resetAccount(newAddressbook) {
+		//fncm.wipeBoxes();
+		addressbook = newAddressbook;
+		fncm.read_messages(await addressbook.getAllInboxes(), receiveHeader);
+		return;
+	}
 
 	function receiveHeader(id, message) {
 		// TODO decrypt, validate
@@ -48,8 +57,9 @@ exports.start = async () => {
 		// if not, createContact
 		let outbox = await addressbook.getOutbox(address);
 		if (outbox == undefined) {
-			outbox = _outbox;
+			outbox = {addr: _outbox, nonce: 1};
 		}
+		console.log("outbox: ", outbox);
 
 		// modify addressbook here
 

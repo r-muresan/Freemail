@@ -9,7 +9,7 @@ exports.start = async () => {
 
 	async function readMessages(inbox_list, callback) {
 		console.log("subscribing to read messages from: ", inbox_list);
-		for (let i = 0; i < inbox_list.length; ++i) {
+		for (let i = 0; i < inbox_list.length; i++) {
 			let db = await orbitdb.open(inbox_list[i].inbox.addr);
 
 			//ITERATE THROUGH, FIND 
@@ -45,6 +45,7 @@ exports.start = async () => {
 
 	async function sendMessage(id, address, msg) {
 		console.log("sending message: ", msg);
+		console.log("with nonce: ", id);
 		let db = await orbitdb.open(address);
 		let message = await db.put({ _id: id, message: msg }, { pin: true });
 		await db.load();
