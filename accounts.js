@@ -25,7 +25,7 @@ function exposeAddressbook(collection) {
 		return contact.inbox;
 	}
 	async function getAllInboxes() {
-		return await collection.find().project({ inbox: 1});
+		return (await collection.find().project({ inbox: 1})).toArray();
 	}
 	async function getSecretKey(address) {
 		if (address == undefined)
@@ -103,6 +103,7 @@ exports.start = async (generalInboxFunc, onSwitch) => {
 					let collection = db.collection(username);
 					generalInbox = await generalInboxFunc();
 					generalInbox._id = "GENERAL_INBOX";
+					//generalInbox.inbox.nonce = 0;
 					collection.insertOne(generalInbox);
 				});
 			});

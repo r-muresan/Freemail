@@ -25,20 +25,22 @@ exports.start = async () => {
 		return;
 	}
 
-	function receiveHeader(id, message) {
+	async function receiveHeader(id, message) {
 		// TODO decrypt, validate
 
 		// for now, assume that message is decrypted, and a stringified JSON
-		let decryptedMessage = JSON.parse(message);
+		console.log("header received!", message);
+		let decryptedMessage = message;
+		//JSON.parse(message);
 		// addressbook.updateContact()
-		addressbook.editContact(decryptedMessage.update);
+		//addressbook.editContact(decryptedMessage.update);
 
 		//get content from IPFS	
 		
-		mailout.send_email_string(fncm.getFile(decryptedMessge.cid), 
+		mailout.send_email_string(await fncm.getFile(decryptedMessage.cid), 
 			"Received Freemail", 
-			decryptedMessge.update._id + "@" + decryptedMessage.return_address,
-			to_address
+			/*decryptedMessage.update._id */ "daniel" + "@" + decryptedMessage.return_address,
+			mailconfig.to_address
 		);
 	}
 
@@ -82,8 +84,10 @@ exports.start = async () => {
 		let inboxObj = {
 			public_key: "test public key",
 			private_key: "test private key",
+			eth_address: "0x74430b2aB6d4bc7cE8BEb0B00e4EF9300cC77523",
 			inbox: {
-				addr: inboxAddress
+				addr: inboxAddress,
+				nonce: 0
 			}
 		};
 		console.log("generated inbox:", inboxObj);

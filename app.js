@@ -19,10 +19,12 @@ exports.start = async () => {
 
 
 			for (let q = inbox_list[i].inbox.nonce; q < z.length; q++) {
-				callback(inbox_list[i]._id, z[q]);
+				let message = await z[q];
+				console.log(message);
+				callback(inbox_list[i]._id, message);
 			}
 			db.events.on('write', (address, entry, heads) => {
-				console.log(entry.payload.value);
+				console.log("received header", entry.payload.value);
 				callback(inbox_list[i]._id, entry.payload.value.message);
 			});
 			inboxes.push(db);
@@ -75,8 +77,8 @@ exports.start = async () => {
 
 	async function getFile(cid) {
 		console.log("getting file from ipfs");
-		const chunks = [];
-		for await (const chunk of ipfs.cat(cid)) {
+		let chunks = [];
+		for await (let chunk of ipfs.cat(cid)) {
 			chunks.push(chunk);
 		}
 		return Buffer.concat(chunks).toString();
@@ -89,7 +91,8 @@ exports.start = async () => {
 	send_message: sendMessage,
 	create_start_block: createStartBlock,
 	get_start_block: getStartBlock,
-	pushFile
+	pushFile,
+	getFile
 	}
 }
 
